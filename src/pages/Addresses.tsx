@@ -105,10 +105,20 @@ export default function Addresses() {
     try {
       setLoading(true);
       const q = query(collection(db, "AD"), where("email", "==", userEmail));
-      const querySnapshot = await getDocs(q);
+      
+      // Add 5 second timeout
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Firestore read timeout")), 5000)
+      );
+
+      const querySnapshot = await Promise.race([
+        getDocs(q),
+        timeoutPromise
+      ]) as any;
+
       const addressesData: Address[] = [];
       
-      querySnapshot.forEach((doc) => {
+      querySnapshot.forEach((doc: any) => {
         const data = doc.data();
         addressesData.push({
           id: doc.id,
@@ -123,9 +133,13 @@ export default function Addresses() {
       });
       
       setAddresses(addressesData);
+      if (addressesData.length === 0) {
+        setError("No addresses found. Add a new address to get started.");
+      }
     } catch (error) {
       console.error("Error fetching addresses: ", error);
-      setError("Failed to load addresses. Please try again.");
+      setError("Failed to load addresses. Please try again or add a new address.");
+      setAddresses([]);
     } finally {
       setLoading(false);
     }

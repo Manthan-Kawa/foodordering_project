@@ -51,6 +51,7 @@ export default function Orders() {
         } catch (err) {
           console.error('Fetch error:', err);
           setError('Failed to load orders. Please refresh the page.');
+          setLoading(false);
         }
       } else {
         console.log('No user signed in');
@@ -61,7 +62,7 @@ export default function Orders() {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [collectionName]);
 
   const fetchOrders = async (userEmail: string) => {
     try {
@@ -76,18 +77,21 @@ export default function Orders() {
         orderBy("createdAt", "desc")
       );
       
-      const querySnapshot = await getDocs(q);
-      console.log(`Found ${querySnapshot.size} orders in ${collectionName}`);
+      // Add 5 second timeout
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Firestore read timeout")), 5000)
+      );
 
-      if (querySnapshot.size === 0 && collectionName === 'Order') {
-        console.log('Trying "orders" collection instead');
-        setCollectionName('orders');
-        return;
-      }
+      const querySnapshot = await Promise.race([
+        getDocs(q),
+        timeoutPromise
+      ]) as any;
+      
+      console.log(`Found ${querySnapshot.size} orders in ${collectionName}`);
 
       const ordersData: Order[] = [];
       
-      querySnapshot.forEach((doc) => {
+      querySnapshot.forEach((doc: any) => {
         const data = doc.data();
         console.log('Raw order data:', data);
         
