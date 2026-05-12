@@ -6,8 +6,7 @@ import {
   manualSignUp, 
   signInWithGoogle, 
   manualLogin,
-  auth, 
-  getUserDocument 
+  auth 
 } from '../firebaseConfig';
 
 interface AuthModalProps {
@@ -88,10 +87,12 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const handleGoogleAuth = async () => {
     try {
       setIsLoading(true);
+      console.log("Google auth started");
       const result = await signInWithGoogle();
-      const userDoc = await getUserDocument(result.uid);
+      console.log("Google auth completed, result:", result);
       
-      if (userDoc) {
+      if (result && result.uid) {
+        console.log("User authenticated successfully");
         setNotification({
           show: true,
           message: 'Login Successful!',
@@ -100,16 +101,16 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
         setTimeout(() => {
           onClose();
           navigate('/');
-        }, 2000);
+        }, 1500);
       } else {
         setNotification({
           show: true,
-          message: 'User not found. Please sign up first.',
+          message: 'Authentication completed but user data not found',
           type: 'error'
         });
-        await auth.signOut();
       }
     } catch (error) {
+      console.error("Google auth error:", error);
       setNotification({
         show: true,
         message: error instanceof Error ? error.message : 'Google authentication failed',

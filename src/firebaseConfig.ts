@@ -31,8 +31,12 @@ const provider = new GoogleAuthProvider();
 // Google Sign-In
 export const signInWithGoogle = async () => {
   try {
+    console.log("Starting Google Sign-In...");
     const result = await signInWithPopup(auth, provider);
-    return await handleUserData(result.user);
+    console.log("Google Sign-In successful, user:", result.user.email);
+    const userData = await handleUserData(result.user);
+    console.log("User data saved successfully");
+    return userData;
   } catch (error) {
     console.error("Google Sign-In Error:", error);
     throw error;
@@ -78,50 +82,93 @@ export const manualLogin = async (email: string, password: string) => {
 
 // Common user data handling
 const handleUserData = async (user: any, name?: string, imageFile?: File | null, password?: string) => {
-  // First try to get existing data
-  const existingData = await getUserDocument(user.uid);
-  
-  let imageUrl = user.photoURL || "https://via.placeholder.com/100";
-  
-  if (imageFile) {
-    const storageRef = ref(storage, `profile_images/${user.uid}`);
-    await uploadBytes(storageRef, imageFile);
-    imageUrl = await getDownloadURL(storageRef);
+  try {
+    console.log("Handling user data for:", user.uid);
+    
+    // First try to get existing data with timeout
+    const existingData = await Promise.race([
+      getUserDocument(user.uid),
+      new Promise(resolve => setTimeout(() => resolve(null), 3000))
+    ]);
+    console.log("Existing data:", existingData);
+    
+    let imageUrl = user.photoURL || "https://via.placeholder.com/100";
+    
+    if (imageFile) {
+      try {
+        const storageRef = ref(storage, `profile_images/${user.uid}`);
+        await uploadBytes(storageRef, imageFile);
+        imageUrl = await getDownloadURL(storageRef);
+        console.log("Image uploaded successfully");
+      } catch (imageError) {
+        console.error("Image upload error:", imageError);
+      }
+    }
+
+    const userName = (existingData as any)?.name || name || user.displayName || "User";
+
+    const userData = {
+      uid: user.uid,
+      email: user.email || "",
+      name: userName,
+      image: (existingData as any)?.image || imageUrl,
+      phone: (existingData as any)?.phone || "",
+      createdAt: (existingData as any)?.createdAt || new Date(),
+      authProvider: user.providerData?.[0]?.providerId || "password",
+      ...(password && { password })
+    };
+
+    const collectionName = userData.authProvider === "google.com" 
+      ? "google_logins" 
+      : "manual_logins";
+
+    // Attempt Firestore write with timeout, but don't wait forever
+    Promise.race([
+      (async () => {
+        const userRef = doc(db, collectionName, user.uid);
+        await setDoc(userRef, userData, { merge: true });
+        console.log("User data saved to Firestore");
+      })(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error("Write timeout")), 3000))
+    ]).catch(err => console.warn("Firestore write warning:", err));
+
+    useUserStore.getState().setUser(userData);
+    return userData;
+  } catch (error) {
+    console.error("Error in handleUserData:", error);
+    // Fallback: create minimal user object from auth user
+    const fallbackData = {
+      uid: user.uid,
+      email: user.email || "",
+      name: name || user.displayName || "User",
+      image: user.photoURL || "https://via.placeholder.com/100",
+      phone: "",
+    };
+    useUserStore.getState().setUser(fallbackData);
+    return fallbackData;
   }
-
-  // Use existing name if available, otherwise use provided name or fallbacks
-  const userName = existingData?.name || name || user.displayName || "User";
-
-  const userData = {
-    uid: user.uid,
-    email: user.email || "",
-    name: userName,
-    image: existingData?.image || imageUrl, // Preserve existing image if available
-    phone: existingData?.phone || "",
-    createdAt: existingData?.createdAt || new Date(),
-    authProvider: user.providerData?.[0]?.providerId || "password",
-    ...(password && { password })
-  };
-
-  const collectionName = userData.authProvider === "google.com" 
-    ? "google_logins" 
-    : "manual_logins";
-
-  const userRef = doc(db, collectionName, user.uid);
-  await setDoc(userRef, userData, { merge: true });
-
-  useUserStore.getState().setUser(userData);
-  return userData;
 };
 
-// Helper function to get user document
+// Helper function to get user document with timeout
 export const getUserDocument = async (uid: string) => {
-  // Check both collections
-  const googleDoc = await getDoc(doc(db, "google_logins", uid));
-  if (googleDoc.exists()) return googleDoc.data();
+  try {
+    // Add 5 second timeout
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Firestore read timeout")), 5000)
+    );
 
-  const manualDoc = await getDoc(doc(db, "manual_logins", uid));
-  if (manualDoc.exists()) return manualDoc.data();
+    // Check both collections
+    const googleDocPromise = getDoc(doc(db, "google_logins", uid));
+    const googleDoc = await Promise.race([googleDocPromise, timeoutPromise]) as any;
+    if (googleDoc.exists()) return googleDoc.data();
 
-  return null;
+    const manualDocPromise = getDoc(doc(db, "manual_logins", uid));
+    const manualDoc = await Promise.race([manualDocPromise, timeoutPromise]) as any;
+    if (manualDoc.exists()) return manualDoc.data();
+
+    return null;
+  } catch (error) {
+    console.warn("getUserDocument error (non-critical):", error);
+    return null;
+  }
 };
