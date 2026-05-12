@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Lab 7 - User Interactions</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Arial;background:linear-gradient(135deg,#f4e4d7,#faf0e6);padding:2rem}
+.h{background:linear-gradient(135deg,#8B4513,#D2691E);color:white;padding:2rem;border-radius:12px;margin-bottom:2rem;text-align:center}
+.s{background:white;padding:1.5rem;margin-bottom:1.5rem;border-radius:12px;box-shadow:0 5px 20px rgba(0,0,0,.1)}
+.s h2{color:#8B4513;margin-bottom:1rem;border-bottom:3px solid #D2691E;padding-bottom:.5rem}
+button{background:linear-gradient(135deg,#D2691E,#8B4513);color:white;border:none;padding:.6rem 1.2rem;border-radius:6px;cursor:pointer;font-weight:bold;margin:.3rem}
+button:hover{transform:translateY(-2px);box-shadow:0 5px 15px rgba(210,105,30,.3)}
+button.d{background-color:#dc3545}
+button.w{background-color:#ffc107;color:#333}
+.dc{display:flex;flex-wrap:wrap;gap:.5rem;margin:1rem 0}
+.ob{background:#f9f9f9;border:2px solid #ddd;padding:1rem;border-radius:8px;margin:1rem 0;min-height:60px}
+.mi{padding:.8rem;margin:.5rem 0;background:#fff9e6;border-left:4px solid #D2691E}
+select{padding:.7rem;border:2px solid #ddd;border-radius:6px;width:100%;margin-bottom:1rem}
+.sb{padding:1rem;border-radius:6px;margin:1rem 0}
+.a{background:#d4edda;border:2px solid #28a745;color:#155724}
+.ia{background:#f8d7da;border:2px solid #dc3545;color:#721c24}
+</style>
+</head>
+<body>
+<div class="h"><h1>☕ User Interactions</h1><p>Responding to clicks, inputs, and events</p></div>
+<div style="max-width:900px;margin:0 auto">
+<div class="s"><h2>1. Click Events</h2><div class="dc"><button onclick="hc()">Click Me!</button><button class="w" onclick="hdc()">Double Click</button><button class="d" onclick="rc()">Reset</button></div><div class="ob">Clicks: <strong id="cc">0</strong></div></div>
+
+<div class="s"><h2>2. Shopping Cart</h2><select id="cs"><option>Select Coffee</option><option value="Espresso">Espresso - $3.50</option><option value="Cappuccino">Cappuccino - $4.50</option><option value="Latte">Latte - $4.50</option><option value="Mocha">Mocha - $5.00</option></select><div class="dc"><button onclick="ac()">Add to Cart</button><button class="d" onclick="clc()">Clear</button></div><div id="cl" class="ob"></div><div class="sb"><p>Items: <strong id="ic">0</strong> | Total: <strong id="tp">$0.00</strong></p></div></div>
+
+<div class="s"><h2>3. Input & Focus</h2><input type="text" id="ni" placeholder="Enter name" onkeyup="hn(this.value)" onfocus="hf()" onblur="hb()"><div class="ob"><p>Name: <strong id="dn">None</strong><br>Focus: <strong id="fs">Not focused</strong><br>Chars: <strong id="cc2">0</strong></p></div></div>
+
+<div class="s"><h2>4. Toggle Features</h2><div class="dc"><button id="dt" class="w" onclick="td()">Delivery: OFF</button><button id="lt" class="w" onclick="tl()">Loyalty: OFF</button></div><div id="ds" class="sb ia">Delivery: INACTIVE</div><div id="ls" class="sb ia">Loyalty: INACTIVE</div></div>
+
+<div class="s"><h2>5. Hover Events</h2><div id="hb" style="padding:2rem;background:#fff9e6;border:2px solid #FFD700;border-radius:8px;text-align:center;font-weight:bold;margin:1rem 0;cursor:pointer" onmouseenter="hhe()" onmouseleave="hhl()">Hover over me!</div><div class="ob"><p>Hovers: <strong id="hc2">0</strong> | Status: <strong id="hs">Not hovered</strong></p></div></div>
+
+<div class="s"><h2>6. Submit Order</h2><button onclick="so()" style="width:100%">Submit Order</button><div id="of" class="ob"></div></div>
+</div>
+
+<script>
+let c=0,cart=[],h=0,d=0,l=0;
+function hc(){c++;document.getElementById('cc').textContent=c}
+function hdc(){c+=5;document.getElementById('cc').textContent=c}
+function rc(){c=0;document.getElementById('cc').textContent=c}
+function ac(){const s=document.getElementById('cs').value;if(!s)return;cart.push(s);uc();document.getElementById('cs').value=''}
+function uc(){const cl=document.getElementById('cl');cl.innerHTML='';let t=0;cart.forEach((item,idx)=>{const p=parseFloat(item.match(/\$[\d.]+/)[0]);t+=p;const li=document.createElement('div');li.className='mi';li.innerHTML=item+' <button class="d" style="padding:.3rem .6rem;font-size:.8rem" onclick="cart.splice('+idx+',1);uc()">Remove</button>';cl.appendChild(li)});document.getElementById('ic').textContent=cart.length;document.getElementById('tp').textContent='$'+t.toFixed(2)}
+function clc(){cart=[];uc()}
+function hn(v){document.getElementById('dn').textContent=v||'None';document.getElementById('cc2').textContent=v.length}
+function hf(){document.getElementById('fs').textContent='Focused'}
+function hb(){document.getElementById('fs').textContent='Not focused'}
+function td(){d=!d;const b=document.getElementById('dt'),s=document.getElementById('ds');if(d){b.textContent='Delivery: ON';b.style.background='linear-gradient(135deg,#28a745,#20c997)';s.className='sb a';s.textContent='Delivery: ACTIVE (+$2.00)'}else{b.textContent='Delivery: OFF';b.style.background='';s.className='sb ia';s.textContent='Delivery: INACTIVE'}}
+function tl(){l=!l;const b=document.getElementById('lt'),s=document.getElementById('ls');if(l){b.textContent='Loyalty: ON';b.style.background='linear-gradient(135deg,#28a745,#20c997)';s.className='sb a';s.textContent='Loyalty: ACTIVE (10% off)'}else{b.textContent='Loyalty: OFF';b.style.background='';s.className='sb ia';s.textContent='Loyalty: INACTIVE'}}
+function hhe(){h++;const b=document.getElementById('hb');b.style.background='linear-gradient(135deg,#D2691E,#8B4513)';b.style.color='white';document.getElementById('hc2').textContent=h;document.getElementById('hs').textContent='Hovered'}
+function hhl(){const b=document.getElementById('hb');b.style.background='#fff9e6';b.style.color='#333';document.getElementById('hs').textContent='Not hovered'}
+function so(){const of=document.getElementById('of');let msg='✓ Order submitted!<br>Items: '+cart.length+'<br>Delivery: '+(d?'Yes':'No')+'<br>Loyalty: '+(l?'Yes':'No');of.innerHTML=msg;of.className='sb a'}
+</script>
+</body>
+</html>

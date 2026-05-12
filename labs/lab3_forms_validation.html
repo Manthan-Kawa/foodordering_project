@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Lab 3 - Form Validation</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+<style>body{background:linear-gradient(135deg,#f4e4d7,#faf0e6);padding:2rem}.h{background:linear-gradient(135deg,#8B4513,#D2691E);color:white;padding:2rem;margin-bottom:2rem;border-radius:12px}.fs{background:white;padding:2rem;border-radius:12px;box-shadow:0 5px 20px rgba(0,0,0,.1);max-width:600px;margin:0 auto}.sb{background:linear-gradient(135deg,#D2691E,#8B4513);color:white;border:none;padding:.8rem;font-weight:bold;width:100%;margin-top:1rem}.sb:hover{box-shadow:0 5px 15px rgba(210,105,30,.3)}
+</style>
+</head>
+<body>
+<div class="h"><div class="container"><h1>☕ Order Form</h1><p>Bootstrap Form Validation</p></div></div>
+<div class="container">
+<div class="fs">
+<div style="background:#e7f3ff;border-left:4px solid #2196F3;padding:1rem;margin-bottom:1.5rem;border-radius:5px">Fill all required fields (*)</div>
+<form id="f" class="needs-validation" novalidate>
+<h5 style="color:#8B4513;margin:1.5rem 0 1rem 0">Personal Info</h5>
+<div class="mb-3"><label class="form-label">Full Name *</label><input type="text" class="form-control" id="n" placeholder="John Doe" required></div>
+<div class="mb-3"><label class="form-label">Email *</label><input type="email" class="form-control" id="e" placeholder="you@example.com" required></div>
+<div class="mb-3"><label class="form-label">Phone *</label><input type="tel" class="form-control" id="p" placeholder="+1(555)123-4567" required></div>
+
+<h5 style="color:#8B4513;margin:1.5rem 0 1rem 0">Order</h5>
+<div class="mb-3"><label class="form-label">Coffee *</label><select class="form-select" id="c" required><option>Select</option><option>Espresso - $3.50</option><option>Cappuccino - $4.50</option><option>Latte - $4.50</option><option>Mocha - $5.00</option></select></div>
+<div class="mb-3"><label class="form-label">Food *</label><select class="form-select" id="fd" required><option>Select</option><option>Croissant - $3.25</option><option>Muffin - $3.75</option><option>Cake - $4.50</option></select></div>
+<div class="mb-3"><label class="form-label">Quantity *</label><input type="number" class="form-control" id="q" min="1" max="10" value="1" required></div>
+
+<h5 style="color:#8B4513;margin:1.5rem 0 1rem 0">Extras</h5>
+<div class="form-check mb-3"><input class="form-check-input" type="checkbox" id="ex"><label class="form-check-label" for="ex">Extra Shot (+$0.50)</label></div>
+<div class="form-check mb-3"><input class="form-check-input" type="checkbox" id="d"><label class="form-check-label" for="d">Delivery (+$2.00)</label></div>
+
+<button type="submit" class="sb">Place Order</button>
+<div id="msg" style="margin-top:1rem;display:none;background:#d4edda;border:2px solid #28a745;color:#155724;padding:1rem;border-radius:6px">✓ Order placed successfully!</div>
+</form>
+</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script>document.getElementById('f').addEventListener('submit',function(e){if(!this.checkValidity()){e.preventDefault();e.stopPropagation()}else{e.preventDefault();document.getElementById('msg').style.display='block'}this.classList.add('was-validated')})
+</script>
+</body>
+</html>

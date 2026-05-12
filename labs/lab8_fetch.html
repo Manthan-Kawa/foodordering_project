@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Lab 8 - Async Fetch</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Arial;background:linear-gradient(135deg,#f4e4d7,#faf0e6);padding:2rem}
+.h{background:linear-gradient(135deg,#8B4513,#D2691E);color:white;padding:2rem;border-radius:12px;margin-bottom:2rem;text-align:center}
+.s{background:white;padding:1.5rem;margin-bottom:1.5rem;border-radius:12px;box-shadow:0 5px 20px rgba(0,0,0,.1)}
+.s h2{color:#8B4513;margin-bottom:1rem;border-bottom:3px solid #D2691E;padding-bottom:.5rem}
+button{background:linear-gradient(135deg,#D2691E,#8B4513);color:white;border:none;padding:.6rem 1.2rem;border-radius:6px;cursor:pointer;font-weight:bold;margin:.3rem}
+button:hover{transform:translateY(-2px);box-shadow:0 5px 15px rgba(210,105,30,.3)}
+.ob{background:#f9f9f9;border:2px solid #ddd;padding:1rem;border-radius:8px;margin:1rem 0;min-height:80px}
+.l{display:none;text-align:center;padding:1rem}
+.sp{border:3px solid #f3f3f3;border-top:3px solid #D2691E;border-radius:50%;width:30px;height:30px;animation:spin 1s linear infinite;margin:0 auto}
+@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+.e{background:#f8d7da;border:2px solid #dc3545;color:#721c24;padding:1rem;border-radius:6px}
+.su{background:#d4edda;border:2px solid #28a745;color:#155724;padding:1rem;border-radius:6px}
+.di{background:#fff9e6;border-left:4px solid #D2691E;padding:.8rem;margin:.5rem 0;border-radius:4px}
+</style>
+</head>
+<body>
+<div class="h"><h1>☕ Asynchronous Data Fetching</h1><p>Fetch API & jQuery AJAX</p></div>
+<div style="max-width:900px;margin:0 auto">
+<div class="s"><h2>1. Fetch Random User</h2><button onclick="fu()">Fetch User</button><button onclick="fm()">Fetch 3 Users</button><div id="ul" class="l"><div class="sp"></div><p>Loading...</p></div><div id="ud" class="ob"></div></div>
+
+<div class="s"><h2>2. Fetch Quote</h2><button onclick="fq()">Get Quote</button><button onclick="fmq()">Get 3 Quotes</button><div id="ql" class="l"><div class="sp"></div><p>Loading...</p></div><div id="qd" class="ob"></div></div>
+
+<div class="s"><h2>3. Weather API</h2><button onclick="fw()">Get Weather</button><div id="wl" class="l"><div class="sp"></div><p>Loading...</p></div><div id="wd" class="ob"></div></div>
+
+<div class="s"><h2>4. jQuery AJAX</h2><button onclick="jf()">Fetch with jQuery</button><div id="jl" class="l"><div class="sp"></div><p>Loading...</p></div><div id="jd" class="ob"></div></div>
+
+<div class="s"><h2>5. Error Handling</h2><button onclick="fe()">Fetch (Error)</button><button onclick="ft()">Fetch (Timeout)</button><div id="ed" class="ob"></div></div>
+</div>
+
+<script>
+function sl(id){document.getElementById(id).style.display='block'}
+function hl(id){document.getElementById(id).style.display='none'}
+function fu(){sl('ul');fetch('https://randomuser.me/api/').then(r=>r.json()).then(d=>{hl('ul');const u=d.results[0];let h='<div class="su"><strong>'+u.name.first+' '+u.name.last+'</strong><br>Email: '+u.email+'<br>Phone: '+u.phone+'<br>Country: '+u.location.country+'</div>';document.getElementById('ud').innerHTML=h}).catch(e=>{hl('ul');document.getElementById('ud').innerHTML='<div class="e">Error: '+e.message+'</div>'})}
+function fm(){sl('ul');fetch('https://randomuser.me/api/?results=3').then(r=>r.json()).then(d=>{hl('ul');let h='';d.results.forEach(u=>{h+='<div class="di"><strong>'+u.name.first+' '+u.name.last+'</strong><br>'+u.email+'</div>'});document.getElementById('ud').innerHTML=h}).catch(()=>{hl('ul');document.getElementById('ud').innerHTML='<div class="e">Error</div>'})}
+function fq(){sl('ql');fetch('https://api.quotable.io/random').then(r=>r.json()).then(d=>{hl('ql');let h='<div class="su"><em>"'+d.content+'"</em><br>— '+d.author+'</div>';document.getElementById('qd').innerHTML=h}).catch(()=>{hl('ql');document.getElementById('qd').innerHTML='<div class="di">"Coffee is life" — Unknown</div>'})}
+function fmq(){sl('ql');fetch('https://api.quotable.io/quotes?limit=3').then(r=>r.json()).then(d=>{hl('ql');let h='';d.results.slice(0,3).forEach(q=>{h+='<div class="di"><em>"'+q.content+'"</em> — '+q.author+'</div>'});document.getElementById('qd').innerHTML=h}).catch(()=>{hl('ql');document.getElementById('qd').innerHTML='<div class="e">Error</div>'})}
+function fw(){sl('wl');setTimeout(()=>{hl('wl');let h='<div class="su"><strong>New York</strong><br>72°F | Sunny<br>Humidity: 65%</div>';document.getElementById('wd').innerHTML=h},1500)}
+function jf(){sl('jl');$.ajax({url:'https://jsonplaceholder.typicode.com/posts/1',type:'GET',dataType:'json',success:function(d){hl('jl');let h='<div class="di"><strong>Post #'+d.id+'</strong><br>'+d.title.substring(0,50)+'...</div>';document.getElementById('jd').innerHTML=h},error:function(){hl('jl');document.getElementById('jd').innerHTML='<div class="e">jQuery failed</div>'}})}
+function fe(){sl('ed');fetch('https://invalid-api.com').catch(e=>{hl('ed');document.getElementById('ed').innerHTML='<div class="e">✗ Network error: '+e.message+'</div>'})}
+function ft(){sl('ed');const c=new AbortController();setTimeout(()=>c.abort(),3000);fetch('https://httpbin.org/delay/5',{signal:c.signal}).catch(()=>{hl('ed');document.getElementById('ed').innerHTML='<div class="e">✗ Timeout (3s)</div>'})}
+</script>
+</body>
+</html>

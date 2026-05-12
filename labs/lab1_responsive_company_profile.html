@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Lab 1 - Responsive Profile</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Arial;color:#333}
+header{background:linear-gradient(135deg,#8B4513,#D2691E);color:white;padding:1rem;position:sticky;top:0}
+nav{display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto;padding:0 20px}
+nav ul{display:flex;list-style:none;gap:2rem}
+nav a{color:white;text-decoration:none}
+nav a:hover{color:#FFD700}
+.hero{background:linear-gradient(rgba(139,69,19,.7),rgba(210,105,30,.7));padding:60px 20px;text-align:center;color:white}
+.hero h1{font-size:2.5rem}
+.btn{background:#FFD700;color:#333;padding:10px 30px;text-decoration:none;border-radius:5px;font-weight:bold;display:inline-block}
+.btn:hover{background:#FFC700}
+section{padding:40px 20px}
+.container{max-width:1200px;margin:0 auto}
+.section-title{font-size:1.8rem;color:#8B4513;text-align:center;margin-bottom:1.5rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:2rem;margin-top:1.5rem}
+.card{background:#fff;padding:1.5rem;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.1);text-align:center}
+.card:hover{transform:translateY(-5px);box-shadow:0 5px 15px rgba(0,0,0,.2)}
+.card i{font-size:2.5rem;display:block;margin-bottom:1rem}
+input,textarea{width:100%;padding:10px;margin-bottom:1rem;border:1px solid #ddd;border-radius:5px}
+footer{background:#333;color:white;text-align:center;padding:2rem}
+@media(max-width:768px){nav ul{flex-direction:column;gap:1rem}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><nav><div style="font-size:24px;font-weight:bold">☕ Pop-N-Dine</div><ul><li><a href="#home">Home</a></li><li><a href="#about">About</a></li><li><a href="#services">Services</a></li></ul></nav></header>
+<section class="hero"><h1>Welcome to Pop-N-Dine</h1><p>Premium coffee & delicious food</p><a href="#services" class="btn">Explore</a></section>
+<section id="about"><div class="container"><h2 class="section-title">About Us</h2><p>Premium cafe established 2020. Quality ingredients, locally sourced. Creating welcoming atmosphere for great food & exceptional coffee.</p></div></section>
+<section style="background:#f9f9f9" id="services"><div class="container"><h2 class="section-title">Services</h2><div class="grid"><div class="card"><div style="font-size:2.5rem">☕</div><h3>Premium Coffee</h3><p>Expert roasted daily</p></div><div class="card"><div style="font-size:2.5rem">🍰</div><h3>Pastries</h3><p>Fresh baked</p></div><div class="card"><div style="font-size:2.5rem">🍽️</div><h3>Full Menu</h3><p>All meals</p></div><div class="card"><div style="font-size:2.5rem">📦</div><h3>Delivery</h3><p>Fast service</p></div></div></div></section>
+<section><div class="container"><h2 class="section-title">Contact</h2><form><input type="text" placeholder="Name" required><input type="email" placeholder="Email" required><textarea placeholder="Message" rows="4" required></textarea><button type="submit" class="btn">Send</button></form><p style="margin-top:2rem"><strong>📍</strong> 123 Main St | <strong>📞</strong> +1(555)123-4567 | <strong>✉️</strong> info@popndine.com</p></div></section>
+<footer><p>&copy; 2024 Pop-N-Dine. All rights reserved.</p></footer>
+</body>
+</html>

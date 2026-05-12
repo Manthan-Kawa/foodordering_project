@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Lab 5 - String Validation</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Arial;background:linear-gradient(135deg,#f4e4d7,#faf0e6);padding:2rem}
+.h{background:linear-gradient(135deg,#8B4513,#D2691E);color:white;padding:2rem;border-radius:12px;margin-bottom:2rem;text-align:center}
+.fs{background:white;padding:2rem;border-radius:12px;box-shadow:0 5px 20px rgba(0,0,0,.1);max-width:800px;margin:0 auto}
+h2{color:#8B4513;margin:1.5rem 0 1rem 0;font-size:1.1rem}
+input,textarea{width:100%;padding:.8rem;border:2px solid #ddd;border-radius:6px;font-size:1rem;font-family:Arial;margin-bottom:1rem}
+input:focus,textarea:focus{outline:none;border-color:#D2691E;box-shadow:0 0 0 3px rgba(210,105,30,.1)}
+button{background:linear-gradient(135deg,#D2691E,#8B4513);color:white;border:none;padding:.8rem 2rem;border-radius:6px;cursor:pointer;font-weight:bold;width:100%;font-size:1rem}
+button:hover{transform:translateY(-2px);box-shadow:0 5px 15px rgba(210,105,30,.3)}
+.vr{padding:1rem;margin-top:1rem;border-radius:6px;display:none}
+.vs{background:#d4edda;border:2px solid #28a745;color:#155724;display:block}
+.ve{background:#f8d7da;border:2px solid #dc3545;color:#721c24;display:block}
+.vc{list-style:none;padding-left:1rem}
+.vc li{margin:.5rem 0}
+</style>
+</head>
+<body>
+<div class="h"><h1>☕ String Validation</h1><p>String Methods & Type Conversion</p></div>
+<div class="container" style="max-width:800px;margin:0 auto">
+<div class="fs">
+<h2>Order Information</h2>
+<input type="text" id="n" placeholder="Full Name" required>
+<input type="text" id="e" placeholder="Email" required>
+<input type="text" id="p" placeholder="Phone (10 digits)" required>
+<input type="text" id="a" placeholder="Address" required>
+<input type="text" id="z" placeholder="Zipcode (5 digits)" required>
+<input type="text" id="q" placeholder="Quantity (1-50)" required>
+<textarea id="sr" placeholder="Special Requests" rows="3"></textarea>
+<button onclick="val()">Validate Order</button>
+<div id="res" class="vr"></div>
+</div>
+</div>
+
+<script>
+function val(){const r=document.getElementById('res'),err=[],suc=[];
+const n=document.getElementById('n').value.trim(),e=document.getElementById('e').value.trim(),p=document.getElementById('p').value.trim(),a=document.getElementById('a').value.trim(),z=document.getElementById('z').value.trim(),q=document.getElementById('q').value.trim();
+
+if(n.length<3||n.length>50)err.push('Name: 3-50 chars');else if(!/^[a-zA-Z\s]+$/.test(n))err.push('Name: letters only');else suc.push('Name valid: '+n);
+if(!e.includes('@')||!e.includes('.'))err.push('Email: @ and . required');else suc.push('Email valid: '+e);
+const ph=p.replace(/\D/g,'');if(ph.length!==10||isNaN(parseInt(ph)))err.push('Phone: 10 digits required');else suc.push('Phone valid: '+ph);
+if(a.length<5)err.push('Address: min 5 chars');else suc.push('Address valid');
+const zc=z.replace(/\D/g,'');if(zc.length!==5||isNaN(parseInt(zc)))err.push('Zipcode: 5 digits');else suc.push('Zipcode valid: '+zc);
+const qn=parseInt(q);if(isNaN(qn)||qn<1||qn>50)err.push('Quantity: 1-50 range');else suc.push('Quantity valid: '+qn);
+
+let h='';if(err.length===0&&suc.length>0){h='<strong>✓ Form Valid!</strong><ul class="vc">';suc.forEach(s=>h+='<li>'+s+'</li>');h+='</ul>';r.className='vr vs'}else{h='<strong>✗ Errors:</strong><ul class="vc">';err.forEach(e=>h+='<li>'+e+'</li>');h+='</ul>';r.className='vr ve'}
+r.innerHTML=h;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Lab 4 - DOM Manipulation</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Arial;background:linear-gradient(135deg,#f4e4d7,#faf0e6);padding:2rem}
+.h{background:linear-gradient(135deg,#8B4513,#D2691E);color:white;padding:2rem;border-radius:12px;margin-bottom:2rem;text-align:center}
+.s{background:white;padding:1.5rem;margin-bottom:1.5rem;border-radius:12px;box-shadow:0 5px 20px rgba(0,0,0,.1)}
+.s h2{color:#8B4513;margin-bottom:1rem;border-bottom:3px solid #D2691E;padding-bottom:.5rem}
+button{background:linear-gradient(135deg,#D2691E,#8B4513);color:white;border:none;padding:.6rem 1.2rem;border-radius:6px;cursor:pointer;font-weight:bold;margin:.3rem}
+button:hover{transform:translateY(-2px);box-shadow:0 5px 15px rgba(210,105,30,.3)}
+.ob{background:#f9f9f9;border:2px solid #ddd;padding:1rem;border-radius:8px;margin:1rem 0;min-height:70px}
+input,select{padding:.6rem;border:2px solid #ddd;border-radius:6px;margin-right:.3rem}
+.gi{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.8rem;margin:1rem 0}
+.gii{background:linear-gradient(135deg,#D2691E,#8B4513);color:white;padding:1rem;border-radius:8px;text-align:center;cursor:pointer;transition:.3s;font-size:.9rem}
+.gii:hover{transform:scale(1.05)}
+.gii.s{transform:scale(1.1);box-shadow:0 0 0 3px #FFD700}
+.cd{font-size:2.2rem;font-weight:bold;color:#D2691E;text-align:center;padding:1.2rem;background:#fff9e6;border-radius:8px;margin:.8rem 0}
+</style>
+</head>
+<body>
+<div class="h"><h1>☕ DOM Manipulations</h1><p>Create, modify, traverse DOM elements</p></div>
+<div style="max-width:900px;margin:0 auto">
+<div class="s"><h2>1. Create & Remove Elements</h2><input type="text" id="in" placeholder="Item" value="Espresso"><input type="number" id="ip" placeholder="Price" value="3.50" style="width:70px"><button onclick="add()">Add</button><button onclick="clr()" style="background-color:#dc3545">Clear</button><div id="lst" class="ob"><p style="color:#999;margin:0">Items here...</p></div></div>
+
+<div class="s"><h2>2. Modify Content</h2><button onclick="inc()">+</button><button onclick="dec()">-</button><button onclick="rst()" style="background-color:#6c757d">Reset</button><div class="cd" id="cnt">0</div><div class="ob"><p style="margin:0">Orders: <strong id="oc">0</strong></p></div></div>
+
+<div class="s"><h2>3. Modify Attributes & Styles</h2><button onclick="col('#8B4513')">Brown</button><button onclick="col('#D2691E')">Orange</button><button onclick="col('#FFD700')">Gold</button><button onclick="col('#2196F3')">Blue</button><div id="cb" style="height:80px;background:linear-gradient(135deg,#8B4513,#D2691E);color:white;display:flex;align-items:center;justify-content:center;border-radius:8px;font-weight:bold;font-size:.9rem;margin:1rem 0">Color: #8B4513</div></div>
+
+<div class="s"><h2>4. Traverse DOM</h2><div class="gi" id="gc"><div class="gii">☕</div><div class="gii">🍰</div><div class="gii">🥐</div><div class="gii">🍫</div><div class="gii">🧋</div><div class="gii">🎂</div></div><div class="ob"><p style="margin:0">Selected: <strong id="sc">0</strong></p><button onclick="cls()" style="margin-top:.5rem">Clear</button></div></div>
+
+<div class="s"><h2>5. Form Values</h2><label>Coffee:</label><select id="cs" onchange="upd()" style="width:100%;margin-bottom:1rem"><option>Select</option><option value="Espresso">Espresso - $3.50</option><option value="Cappuccino">Cappuccino - $4.50</option><option value="Latte">Latte - $4.50</option><option value="Mocha">Mocha - $5.00</option></select><div><label><input type="checkbox" id="es" onchange="upd()"> Extra Shot (+$0.50)</label><br><label><input type="checkbox" id="dv" onchange="upd()"> Delivery (+$2.00)</label></div><div class="ob" style="margin-top:1rem"><p style="margin:.3rem 0">Coffee: <strong id="sd">None</strong></p><p style="margin:.3rem 0">Extras: <strong id="se">None</strong></p><p style="margin:0">Total: <strong id="st">$0.00</strong></p></div></div>
+</div>
+
+<script>
+let c=0;
+function add(){const n=document.getElementById('in').value,p=document.getElementById('ip').value;if(!n||!p)return;const l=document.getElementById('lst'),i=document.createElement('div');i.style.cssText='background:#fff9e6;padding:.7rem;margin:.3rem 0;border-left:4px solid #D2691E;display:flex;justify-content:space-between;align-items:center';i.innerHTML=`<div>☕ <strong>${n}</strong> $${p}</div><button style="background-color:#dc3545;padding:.3rem .6rem;font-size:.8rem" onclick="this.parentElement.remove()">X</button>`;if(l.children[0]?.textContent.includes('Items'))l.innerHTML='';l.appendChild(i)}
+function clr(){document.getElementById('lst').innerHTML='<p style="color:#999;margin:0">Items here...</p>'}
+function inc(){c++;updc()}
+function dec(){if(c>0)c--;updc()}
+function rst(){c=0;updc()}
+function updc(){document.getElementById('cnt').textContent=c;document.getElementById('oc').textContent=c}
+function col(cr){const b=document.getElementById('cb');b.style.backgroundColor=cr;b.textContent='Color: '+cr}
+document.querySelectorAll('.gii').forEach(e=>e.addEventListener('click',function(){this.classList.toggle('s');document.getElementById('sc').textContent=document.querySelectorAll('.gii.s').length}));
+function cls(){document.querySelectorAll('.gii.s').forEach(e=>e.classList.remove('s'));document.getElementById('sc').textContent='0'}
+function upd(){const cf=document.getElementById('cs').value||'None',ex=[],t=cf==='None'?0:parseFloat(cf.match(/\$[\d.]+/)[0]);if(document.getElementById('es').checked){ex.push('Shot');t+=.5}if(document.getElementById('dv').checked){ex.push('Delivery');t+=2}document.getElementById('sd').textContent=cf;document.getElementById('se').textContent=ex.length>0?ex.join(', '):'None';document.getElementById('st').textContent='$'+t.toFixed(2)}
+</script>
+</body>
+</html>
